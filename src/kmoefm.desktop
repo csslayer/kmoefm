@@ -1,10 +1,10 @@
 [Desktop Entry]
 Name=KMoeFM
 Name[zh_CN]=KMoeFM
-GenericName=Meo FM
+GenericName=Moe FM
 GenericName[zh_CN]=萌否电台
-Exec=kmeofm
+Exec=kmoefm
 Type=Application
 Terminal=false
-Icon=kmeofm
+Icon=kmoefm
 Categories=Qt;KDE;AudioVideo;Player;
