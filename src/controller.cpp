@@ -44,9 +44,10 @@ bool Controller::eventFilter(QObject *watched, QEvent *event)
 
 void Controller::loadMusic()
 {
-    RequestDataJob* job = new RequestDataJob(QUrl("http://moe.fm/listen/playlist"), QOAuth::GET);
+    QOAuth::ParamMap params;
+    RequestDataJob* job = new RequestDataJob(QUrl("http://moe.fm/listen/playlist"), QOAuth::GET, params);
 
-    // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
+    connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
     connect(job, SIGNAL(finished(bool)), job, SLOT(deleteLater()));
     connect(job, SIGNAL(finished(bool)), SLOT(loadMusicFinished(bool)));
 
@@ -97,6 +98,9 @@ void Controller::loadMusicFinished(bool success)
         if (!itemMap.contains("wiki_title") || !itemMap["wiki_title"].canConvert<QString>()) {
             continue;
         }
+        if (!itemMap.contains("wiki_id") || !itemMap["wiki_id"].canConvert<QString>()) {
+            continue;
+        }
         if (!itemMap.contains("wiki_url") || !itemMap["wiki_url"].canConvert<QString>()) {
             continue;
         }
@@ -122,11 +126,18 @@ void Controller::loadMusicFinished(bool success)
         if (itemMap.contains("fav_sub") && itemMap["fav_sub"].canConvert<QString>()) {
             favId = itemMap["fav_sub"].toString();
         }
+
+        QString favAlbum;
+        if (itemMap.contains("fav_wiki") && itemMap["fav_wiki"].canConvert<QString>()) {
+            favId = itemMap["fav_wiki"].toString();
+        }
         // qDebug() << itemMap["stream_time"].toString() << itemMap["title"].toString();
 
         Music m;
         m.favId = favId;
+        m.favAlbum = favAlbum;
         m.title = itemMap["title"].toString();
+        m.albumId = itemMap["wiki_id"].toString();
         m.artist = itemMap["artist"].toString();
         m.album = itemMap["wiki_title"].toString();
         m.albumUrl = itemMap["wiki_url"].toString();
@@ -164,25 +175,28 @@ void Controller::playPause()
     }
 }
 
-void Controller::like()
+void Controller::like(bool isAlbum)
 {
+    const char* checkField = isAlbum ? "favAlbum" : "favId";
+    const char* typeField = isAlbum ? "music" : "song";
+    const char* objIdField = isAlbum ? "albumId" : "id";
     RequestDataJob* job;
-    if ((*m_current)["favId"].toString().length() > 0) {
+    if ((*m_current)[checkField].toString().length() > 0) {
         QOAuth::ParamMap params;
-        params.insert("fav_obj_type", "song");
-        params.insert("fav_obj_id", (*m_current)["id"].toString().toLatin1());
+        params.insert("fav_obj_type", typeField);
+        params.insert("fav_obj_id", (*m_current)[objIdField].toString().toLatin1());
         job = new RequestDataJob(
             QUrl("http://api.moefou.org/fav/delete.json"),
             QOAuth::GET,
             params
         );
-        m_current->insert("favId", "");
+        m_current->insert(checkField, "");
         connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
         emit infoChanged();
     } else {
         QOAuth::ParamMap params;
-        params.insert("fav_obj_type", "song");
-        params.insert("fav_obj_id", (*m_current)["id"].toString().toLatin1());
+        params.insert("fav_obj_type", typeField);
+        params.insert("fav_obj_id", (*m_current)[objIdField].toString().toLatin1());
         params.insert("fav_type", "1");
         params.insert("save_status", "1");
         job = new RequestDataJob(
@@ -191,6 +205,7 @@ void Controller::like()
             params
         );
         connect(job, SIGNAL(finished(bool)), this, SLOT(favFinshed(bool)));
+        job->setProperty("isAlbum", isAlbum);
     }
     // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
     connect(job, SIGNAL(finished(bool)), job, SLOT(deleteLater()));
@@ -209,6 +224,7 @@ void Controller::setCurrentMusic(const Music& m)
     m_mediaObject->play();
 
     m_current->insert("id", m.id);
+    m_current->insert("albumId", m.albumId);
     m_current->insert("title", m.title);
     m_current->insert("songUrl", m.songUrl);
     m_current->insert("artist", m.artist);
@@ -218,6 +234,7 @@ void Controller::setCurrentMusic(const Music& m)
     m_current->insert("streamTime", m.streamTime);
     m_current->insert("streamLength", m.streamLength);
     m_current->insert("favId", m.favId);
+    m_current->insert("favAlbum", m.favAlbum);
 
     emit infoChanged();
 }
@@ -265,6 +282,7 @@ void Controller::favFinshed(bool success)
     if (!success) {
         return;
     }
+    bool isAlbum = job->property("isAlbum").toBool();
     QVariant result = m_parser->parse(job->data());
     if (!result.canConvert<QVariantMap>()) {
         return;
@@ -285,7 +303,7 @@ void Controller::favFinshed(bool success)
         return;
     }
 
-    m_current->insert("favId", itemMap["fav_id"].toString());
+    m_current->insert(isAlbum ? "favAlbum" : "favId", "1");
     emit infoChanged();
     emit favoriteAdded();
 }

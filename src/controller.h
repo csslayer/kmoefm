@@ -32,7 +32,7 @@ public:
 public slots:
     void playNext();
     void playPause();
-    void like();
+    void like(bool isAlbum);
     void loadMusicFinished(bool);
     void loadMusic();
     void playerFinished();

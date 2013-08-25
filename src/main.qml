@@ -273,7 +273,7 @@ Item {
             }
             Item {
                 anchors.centerIn: parent
-                width: like.width + playpause.width + next.width
+                width: like.width + likeAlbum.width + playpause.width + next.width
                 height: like.height
                 Image {
                     id: like
@@ -282,6 +282,7 @@ Item {
                     sourceSize.height: height
                     anchors {
                         verticalCenter: parent.verticalCenter
+                        left: parent.left
                     }
 
                     width: 32
@@ -289,7 +290,27 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: controller.like()
+                        onClicked: controller.like(false)
+                    }
+                }
+
+
+                Image {
+                    id: likeAlbum
+                    source: "image://theme/media-optical-mixed-cd" + ((controller.info.favAlbum.length > 0) ? "" :  "/disabled")
+                    sourceSize.width: width
+                    sourceSize.height: height
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: like.right
+                    }
+
+                    width: 32
+                    height: 32
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: controller.like(true)
                     }
                 }
 
@@ -317,7 +338,7 @@ Item {
                     source: controller.isPaused ? "image://theme/media-playback-start" :  "image://theme/media-playback-pause"
                     anchors {
                         verticalCenter: parent.verticalCenter
-                        left: like.right
+                        left: likeAlbum.right
                     }
 
                     sourceSize.width: width
