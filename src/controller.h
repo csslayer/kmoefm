@@ -1,8 +1,8 @@
 #ifndef _CONTROLLER_H_
 #define _CONTROLLER_H_
 #include <QObject>
-#include <Path>
-#include <phononnamespace.h>
+#include <phonon/Path>
+#include <phonon/phononnamespace.h>
 #include <QDeclarativePropertyMap>
 #include <QColor>
 #include "music.h"

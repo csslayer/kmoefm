@@ -1,8 +1,8 @@
 #include "controller.h"
 #include "requestdatajob.h"
 #include "app.h"
-#include <AudioOutput>
-#include <MediaObject>
+#include <phonon/AudioOutput>
+#include <phonon/MediaObject>
 #include <QDeclarativePropertyMap>
 #include <QPalette>
 #include <qjson/parser.h>
