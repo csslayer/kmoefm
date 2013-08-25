@@ -47,7 +47,7 @@ void Controller::loadMusic()
     QOAuth::ParamMap params;
     RequestDataJob* job = new RequestDataJob(QUrl("http://moe.fm/listen/playlist"), QOAuth::GET, params);
 
-    connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
+    // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
     connect(job, SIGNAL(finished(bool)), job, SLOT(deleteLater()));
     connect(job, SIGNAL(finished(bool)), SLOT(loadMusicFinished(bool)));
 
@@ -191,7 +191,7 @@ void Controller::like(bool isAlbum)
             params
         );
         m_current->insert(checkField, "");
-        connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
+        // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
         emit infoChanged();
     } else {
         QOAuth::ParamMap params;
