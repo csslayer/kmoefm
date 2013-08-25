@@ -8,6 +8,7 @@ find_package(QOAuth REQUIRED)
 find_package(QCA2 REQUIRED)
 find_package(QJson REQUIRED)
 find_package(Phonon REQUIRED)
+find_package(KDeclarative REQUIRED)
 
 add_subdirectory(src)
 

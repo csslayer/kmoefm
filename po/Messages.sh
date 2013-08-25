@@ -20,7 +20,7 @@ echo "Extracting messages"
 
 # see above on sorting
 
-find "${BASEDIR}" -name '*.cpp' -o -name '*.h' -o -name '*.c' | sort > "${WDIR}/infiles.list"
+find "${BASEDIR}" -name '*.cpp' -o -name '*.qml' -o -name '*.h' -o -name '*.c' | sort > "${WDIR}/infiles.list"
 echo "rc.cpp" >> "${WDIR}/infiles.list"
 
 xgettext --from-code=UTF-8 -C -kde -ci18n -ki18n:1 -ki18nc:1c,2 -ki18np:1,2 -ki18ncp:1c,2,3 \

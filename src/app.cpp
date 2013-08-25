@@ -8,6 +8,7 @@
 #include <KStatusNotifierItem>
 #include <KConfigGroup>
 #include <QDebug>
+#include <KActionCollection>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QBuffer>
@@ -17,6 +18,8 @@
 #include <qjson/parser.h>
 #include <qdeclarative.h>
 #include <KLocalizedString>
+#include <KAction>
+#include <KMenu>
 
 App::App() : KUniqueApplication()
     ,m_networkAccessManager(new NetworkAccessManager(this))
@@ -36,6 +39,10 @@ App::App() : KUniqueApplication()
     m_tray->setToolTipIconByName("kmoefm");
     m_tray->setToolTipTitle(i18n("KMoeFM"));
     m_tray->setToolTipSubTitle(i18n("Moe FM"));
+    KAction* action;
+    action = m_tray->actionCollection()->addAction(QLatin1String("relogin"), this, SLOT(relogin()));
+    action->setText(i18n("Relogin"));
+    m_tray->contextMenu()->addAction(action);
 
     m_oauth->setConsumerKey(CONSUMER_KEY);
     m_oauth->setConsumerSecret(CONSUMER_SECRET);
@@ -73,6 +80,11 @@ void App::login()
         quit();
     }
     delete loginDialog;
+}
+
+void App::relogin()
+{
+    login();
 }
 
 void App::readSettings()

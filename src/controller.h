@@ -35,6 +35,7 @@ public slots:
     void loadMusic();
     void playerFinished();
     virtual bool eventFilter(QObject* , QEvent* );
+    void favFinshed(bool success);
 
 public:
     QDeclarativePropertyMap* info() const;
@@ -46,6 +47,7 @@ signals:
     void infoChanged();
     void colorChanged();
     void stateChanged();
+    void favoriteAdded();
 
 private:
     void setCurrentMusic(const Music& m);

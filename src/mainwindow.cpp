@@ -4,10 +4,17 @@
 #include <QDeclarativeView>
 #include <QDeclarativeContext>
 #include <QDeclarativeEngine>
+#include <kdeclarative.h>
 
 MainWindow::MainWindow(QWidget* parent): KMainWindow(parent)
     ,m_declarativeView(new QDeclarativeView(this))
 {
+    KDeclarative kdeclarative;
+    //view refers to the QDeclarativeView
+    kdeclarative.setDeclarativeEngine(m_declarativeView->engine());
+    kdeclarative.initialize();
+    //binds things like kconfig and icons
+    kdeclarative.setupBindings();
     setCentralWidget(m_declarativeView);
     m_declarativeView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
     m_declarativeView->setResizeMode(QDeclarativeView::SizeRootObjectToView);

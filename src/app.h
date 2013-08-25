@@ -34,6 +34,7 @@ public slots:
     void debugJob(bool);
     void checkCredential();
     void login();
+    void relogin();
 signals:
     void checkCredentialFinished(bool);
 

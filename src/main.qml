@@ -1,6 +1,45 @@
 import QtQuick 1.1
 
 Item {
+    Item {
+        z: 1
+        anchors.fill: parent
+        id: favOverlay
+        opacity: 0.0
+        Rectangle {
+            anchors.fill: parent
+            opacity: 0.4
+            color: "grey"
+
+        }
+        Rectangle {
+            width: favText.width + Math.min(favText.width * 0.5, favText.height * 0.5)
+            height: favText.height + Math.min(favText.width * 0.5, favText.height * 0.5)
+            anchors.centerIn: parent
+            opacity: 0.8
+            color: "white"
+            radius: Math.min(favText.width * 0.5, favText.height * 0.5)
+        }
+        Text {
+            id: favText
+            anchors.centerIn: parent
+            text: i18n("Favorite Added")
+            color: "black"
+        }
+
+
+        Connections {
+            target: controller
+            onFavoriteAdded : favAnimation.start()
+        }
+
+        SequentialAnimation {
+            id: favAnimation
+            NumberAnimation { target: favOverlay; property: "opacity"; to: 1.0; duration: 250 }
+            PauseAnimation  { duration: 1000 }
+            NumberAnimation { target: favOverlay; property: "opacity"; to: 0.0; duration: 250 }
+        }
+    }
 
     Image {
         anchors {
@@ -11,6 +50,25 @@ Item {
         height: 192
         width: 192
         smooth: true
+
+        Rectangle {
+            id: coverOverlay
+            anchors.fill: parent
+            opacity: 0.0
+            color: "grey"
+            states: [
+                State {
+                    name: "paused"; when: controller.isPaused
+                    PropertyChanges { target: coverOverlay; opacity: 0.5 }
+                },
+                State {
+                    name: "play"; when: !controller.isPaused
+                    PropertyChanges { target: coverOverlay; opacity: 0.0 }
+                }]
+            transitions: Transition {
+                NumberAnimation { properties: "opacity"; easing.type: Easing.Linear ; }
+            }
+        }
     }
 
     Item {

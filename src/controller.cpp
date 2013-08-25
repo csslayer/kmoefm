@@ -159,6 +159,7 @@ void Controller::like()
     );
     // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
     connect(job, SIGNAL(finished(bool)), job, SLOT(deleteLater()));
+    connect(job, SIGNAL(finished(bool)), this, SLOT(favFinshed(bool)));
     job->start();
 }
 
@@ -221,4 +222,11 @@ QColor Controller::linkColor() const
 bool Controller::isPaused() const
 {
     return m_mediaObject->state() == Phonon::PausedState;
+}
+
+void Controller::favFinshed(bool success)
+{
+    if (success) {
+        emit favoriteAdded();
+    }
 }

@@ -5,6 +5,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
                     ${QTOAUTH_INCLUDE_DIR}
                     ${QCA2_INCLUDE_DIR}
                     ${PHONON_INCLUDE_DIR}
+                    ${KDECLARATIVE_INCLUDE_DIRS}
                     )
 
 set(moefm_SRCS app.cpp main.cpp logindialog.cpp
@@ -27,6 +28,7 @@ target_link_libraries(kmoefm
                       ${QT_QTDECLARATIVE_LIBRARY}
                       ${QJSON_LIBRARY}
                       ${PHONON_LIBRARY}
+                      ${KDECLARATIVE_LIBRARIES}
                       ${QCA2_LIBRARIES})
 install(TARGETS kmoefm RUNTIME DESTINATION bin)
 
