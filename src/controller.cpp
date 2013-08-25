@@ -172,7 +172,7 @@ QDeclarativePropertyMap* Controller::info() const
 
 void Controller::setCurrentMusic(const Music& m)
 {
-    m_mediaObject->clearQueue();
+    m_mediaObject->clear();
     m_mediaObject->enqueue(m.url);
     m_mediaObject->play();
     connect(m_mediaObject, SIGNAL(finished()), this, SLOT(playerFinished()));
@@ -234,5 +234,5 @@ void Controller::favFinshed(bool success)
 
 void Controller::playerStateChanged(Phonon::State newState, Phonon::State oldState)
 {
-    kDebug() << newState << oldState;
+    // kDebug() << newState << oldState;
 }
