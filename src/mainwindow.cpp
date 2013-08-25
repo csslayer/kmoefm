@@ -5,10 +5,16 @@
 #include <QDeclarativeContext>
 #include <QDeclarativeEngine>
 #include <kdeclarative.h>
+#include <KStandardAction>
+#include <KActionCollection>
+#include <KMenuBar>
 
-MainWindow::MainWindow(QWidget* parent): KMainWindow(parent)
+MainWindow::MainWindow(QWidget* parent): KXmlGuiWindow(parent)
     ,m_declarativeView(new QDeclarativeView(this))
 {
+    KStandardAction::quit(moeApp, SLOT(quit()), actionCollection());
+    setupGUI( Keys  | Create);
+    menuBar()->hide();
     KDeclarative kdeclarative;
     //view refers to the QDeclarativeView
     kdeclarative.setDeclarativeEngine(m_declarativeView->engine());
@@ -23,24 +29,10 @@ MainWindow::MainWindow(QWidget* parent): KMainWindow(parent)
     m_declarativeView->setSource(QUrl("qrc:/main.qml"));
     setMinimumHeight(192);
     setMinimumWidth(192 * 2);
-
-    connect(moeApp->controller(), SIGNAL(infoChanged()), SLOT(updateInfo()));
-    updateInfo();
 }
 
 MainWindow::~MainWindow()
 {
-}
-
-void MainWindow::updateInfo()
-{
-    QString title = (*moeApp->controller()->info())["title"].toString();
-    if (title.isEmpty()) {
-        title = QLatin1String("MoeFM");
-    } else {
-        title = QString("%1 - MoeFM").arg(title);
-    }
-    setWindowTitle(title);
 }
 
 void MainWindow::closeEvent(QCloseEvent* e)

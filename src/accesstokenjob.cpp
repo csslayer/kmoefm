@@ -22,7 +22,7 @@ void AccessTokenJob::start()
     oauth.setConsumerKey(CONSUMER_KEY);
     oauth.setConsumerSecret(CONSUMER_SECRET);
 
-    qDebug() << m_token << m_secret << m_params;
+    // qDebug() << m_token << m_secret << m_params;
     QOAuth::ParamMap map = oauth.accessToken (ACCESS_TOKEN_URL, QOAuth::POST, m_token, m_secret, QOAuth::HMAC_SHA1, m_params);
 
     bool success = false;

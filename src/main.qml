@@ -50,12 +50,27 @@ Item {
         height: 192
         width: 192
         smooth: true
+        MouseArea {
+            anchors.fill: parent
+            onClicked: controller.playPause()
+        }
 
         Rectangle {
             id: coverOverlay
             anchors.fill: parent
             opacity: 0.0
             color: "grey"
+
+            Image {
+                source: "image://theme/media-playback-pause"
+                anchors.centerIn: parent
+
+                sourceSize.width: width
+                sourceSize.height: height
+                width: 32
+                height: 32
+            }
+
             states: [
                 State {
                     name: "paused"; when: controller.isPaused
@@ -84,6 +99,7 @@ Item {
                 top: parent.top
                 left: parent.left
                 right: parent.right
+                margins: 5
             }
             id : title
             elide: Text.ElideMiddle
@@ -104,8 +120,9 @@ Item {
         Text {
             anchors {
                 top: title.bottom
-                left: title.left
+                left: parent.left
                 right: parent.right
+                margins: 5
             }
             id : artist
             elide: Text.ElideMiddle
@@ -115,8 +132,9 @@ Item {
         Text {
             anchors {
                 top: artist.bottom
-                left: title.left
+                left: parent.left
                 right: parent.right
+                margins: 5
             }
             id : album
             color: controller.info.albumUrl.length > 0 ? controller.linkColor : controller.textColor

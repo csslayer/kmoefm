@@ -7,7 +7,7 @@
 
 #include <KStatusNotifierItem>
 #include <KConfigGroup>
-#include <QDebug>
+#include <KDebug>
 #include <KActionCollection>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -43,6 +43,9 @@ App::App() : KUniqueApplication()
     action = m_tray->actionCollection()->addAction(QLatin1String("relogin"), this, SLOT(relogin()));
     action->setText(i18n("Relogin"));
     m_tray->contextMenu()->addAction(action);
+    m_tray->setAssociatedWidget(m_mainWindow);
+
+    connect(m_controller, SIGNAL(infoChanged()), this, SLOT(updateInfo()));
 
     m_oauth->setConsumerKey(CONSUMER_KEY);
     m_oauth->setConsumerSecret(CONSUMER_SECRET);
@@ -63,12 +66,26 @@ NetworkAccessManager* App::networkAccessManager() const
     return m_networkAccessManager;
 }
 
+void App::updateInfo()
+{
+    QString title = (*moeApp->controller()->info())["title"].toString();
+    m_tray->setToolTipSubTitle(title);
+    m_tray->showMessage(i18n("Moe FM"), title, "kmoefm", 4000);
+    if (title.isEmpty()) {
+        title = i18n("Moe FM");
+    } else {
+        title = QString(i18n("%1 - Moe FM")).arg(title);
+    }
+    m_mainWindow->setWindowTitle(title);
+}
+
+
 void App::login()
 {
     LoginDialog* loginDialog = new LoginDialog(m_mainWindow);
     int result = loginDialog->exec();
     if (result == QDialog::Accepted) {
-        qDebug() << loginDialog->token() << loginDialog->secret();
+        // qDebug() << loginDialog->token() << loginDialog->secret();
         m_token = loginDialog->token();
         m_secret = loginDialog->secret();
 
@@ -123,7 +140,7 @@ void App::debugJob(bool success)
 {
     RequestDataJob* job = static_cast<RequestDataJob*>(sender());
     QVariant result = m_parser->parse(job->data());
-    qDebug() << success << result;
+    kDebug() << success << result;
 }
 
 void App::writeSettings()
@@ -157,7 +174,7 @@ void App::finished(bool success)
     RequestDataJob* job = static_cast<RequestDataJob*>(sender());
     if (success) {
         QVariant result = m_parser->parse(job->data());
-        qDebug() << result;
+        // qDebug() << result;
     }
 }
 

@@ -20,7 +20,7 @@ RequestDataJob::RequestDataJob(const QUrl& url, QOAuth::HttpMethod method, QOAut
     } else if (method == QOAuth::GET) {
         QUrl newUrl(url.toString().append(moeApp->createParametersString(m_request.url(), method, paramMap, QOAuth::ParseForInlineQuery)));
         m_request.setUrl(newUrl);
-        qDebug() << m_request.url();
+        // qDebug() << m_request.url();
     }
 
 }

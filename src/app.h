@@ -35,6 +35,7 @@ public slots:
     void checkCredential();
     void login();
     void relogin();
+    void updateInfo();
 signals:
     void checkCredentialFinished(bool);
 

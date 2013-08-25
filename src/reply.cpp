@@ -12,7 +12,6 @@ Reply::Reply (const QUrl& url, QObject* parent) : QNetworkReply (parent)
     QTimer::singleShot (0, this, SIGNAL (finished()));
     open (ReadOnly | Unbuffered);
     setUrl (url);
-    qDebug() << url;
 }
 
 void Reply::abort()

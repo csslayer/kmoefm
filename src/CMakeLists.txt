@@ -31,5 +31,7 @@ target_link_libraries(kmoefm
                       ${KDECLARATIVE_LIBRARIES}
                       ${QCA2_LIBRARIES})
 install(TARGETS kmoefm RUNTIME DESTINATION bin)
+install(FILES kmoefmui.rc
+        DESTINATION  ${DATA_INSTALL_DIR}/kmoefm)
 
 install(PROGRAMS kmoefm.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})

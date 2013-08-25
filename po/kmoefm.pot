@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: wengxt@gmail.com\n"
-"POT-Creation-Date: 2013-08-25 05:42-0400\n"
+"POT-Creation-Date: 2013-08-25 06:24-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,21 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/app.cpp:37 ../src/app.cpp:40 ../src/main.cpp:9
+#: ../src/app.cpp:38 ../src/app.cpp:41 ../src/app.cpp:73 ../src/app.cpp:75
+#: ../src/main.cpp:9
 msgid "Moe FM"
 msgstr ""
 
-#: ../src/app.cpp:39 ../src/main.cpp:8
+#: ../src/app.cpp:40 ../src/main.cpp:8
 msgid "KMoeFM"
 msgstr ""
 
-#: ../src/app.cpp:43
+#: ../src/app.cpp:44
 msgid "Relogin"
+msgstr ""
+
+#: ../src/app.cpp:77
+msgid "%1 - Moe FM"
 msgstr ""
 
 #: ../src/main.cpp:10
@@ -41,7 +46,7 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: ../src/main.qml:25
+#: ../src/main.qml:26
 msgid "Favorite Added"
 msgstr ""
 
