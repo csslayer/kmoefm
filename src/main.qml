@@ -47,6 +47,7 @@ Item {
         }
         id: cover
         source: controller.info.cover
+        asynchronous: true
         height: 192
         width: 192
         smooth: true
