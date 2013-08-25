@@ -27,8 +27,10 @@ MainWindow::MainWindow(QWidget* parent): KXmlGuiWindow(parent)
     m_declarativeView->engine()->addImageProvider("theme", new ThemeIconProvider);
     m_declarativeView->rootContext()->setContextProperty("controller", moeApp->controller());
     m_declarativeView->setSource(QUrl("qrc:/main.qml"));
+    m_declarativeView->viewport()->setAutoFillBackground(false);
+    m_declarativeView->setAttribute(Qt::WA_TranslucentBackground, true);
     setMinimumHeight(192);
-    setMinimumWidth(192 * 2);
+    setMinimumWidth(192 * 3);
 }
 
 MainWindow::~MainWindow()

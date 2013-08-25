@@ -1,7 +1,6 @@
 import QtQuick 1.1
 
 Item {
-
     function formatTime(sec) {
         h = Math.floor(sec / 60 / 60);
         m = Math.floor(sec / 60) % 60;
@@ -62,6 +61,7 @@ Item {
     Item {
         anchors {
             left: parent.left
+            verticalCenter: parent.verticalCenter
         }
         id: cover
         height: 192
