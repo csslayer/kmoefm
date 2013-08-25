@@ -4,6 +4,7 @@
 #include <phonon/AudioOutput>
 #include <phonon/MediaObject>
 #include <QDeclarativePropertyMap>
+#include <QTextDocument>
 #include <QPalette>
 #include <qjson/parser.h>
 #include <KDebug>
@@ -54,6 +55,19 @@ void Controller::loadMusic()
     job->start();
 }
 
+template<class T>
+bool checkValue(const QVariantMap& map, const QString& key)
+{
+    return map.contains(key) && map[key].canConvert<T>();
+}
+
+QString normalizeString(const QString& s)
+{
+    QTextDocument d;
+    d.setHtml(s);
+    return d.toPlainText();
+}
+
 void Controller::loadMusicFinished(bool success)
 {
     if (!success) {
@@ -83,63 +97,47 @@ void Controller::loadMusicFinished(bool success)
         }
 
         QVariantMap itemMap = item.toMap();
-        if (!itemMap.contains("title") || !itemMap["title"].canConvert<QString>()) {
-            continue;
+        QStringList valueToCheck;
+        valueToCheck << "title" << "sub_id" << "url" << "artist"
+                     << "wiki_title" << "wiki_id" << "wiki_url"
+                     << "sub_url" << "stream_time" << "stream_length";
+        bool flag = false;
+        foreach(const QString& key, valueToCheck) {
+            if (!checkValue<QString>(itemMap, key)) {
+                flag = true;
+                break;
+            }
         }
-        if (!itemMap.contains("sub_id") || !itemMap["sub_id"].canConvert<QString>()) {
-            continue;
-        }
-        if (!itemMap.contains("url") || !itemMap["url"].canConvert<QString>()) {
-            continue;
-        }
-        if (!itemMap.contains("artist") || !itemMap["artist"].canConvert<QString>()) {
-            continue;
-        }
-        if (!itemMap.contains("wiki_title") || !itemMap["wiki_title"].canConvert<QString>()) {
-            continue;
-        }
-        if (!itemMap.contains("wiki_id") || !itemMap["wiki_id"].canConvert<QString>()) {
-            continue;
-        }
-        if (!itemMap.contains("wiki_url") || !itemMap["wiki_url"].canConvert<QString>()) {
-            continue;
-        }
-        if (!itemMap.contains("sub_url") || !itemMap["sub_url"].canConvert<QString>()) {
-            continue;
-        }
-        if (!itemMap.contains("stream_time") || !itemMap["stream_time"].canConvert<QString>()) {
-            continue;
-        }
-        if (!itemMap.contains("stream_length") || !itemMap["stream_length"].canConvert<QString>()) {
+        if (flag) {
             continue;
         }
 
         QString cover;
-        if (itemMap.contains("cover") && itemMap["cover"].canConvert<QVariantMap>()) {
-            QMap< QString, QVariant > coverMap = itemMap["cover"].toMap();
-            if (coverMap.contains("square") && coverMap["square"].canConvert<QString>()) {
+        if (checkValue<QVariantMap>(itemMap, "cover")) {
+            QVariantMap coverMap = itemMap["cover"].toMap();
+            if (checkValue<QString>(coverMap, "square")) {
                 cover = coverMap["square"].toString();
             }
         }
 
         QString favId;
-        if (itemMap.contains("fav_sub") && itemMap["fav_sub"].canConvert<QString>()) {
+        if (checkValue<QString>(itemMap, "fav_sub")) {
             favId = itemMap["fav_sub"].toString();
         }
 
         QString favAlbum;
-        if (itemMap.contains("fav_wiki") && itemMap["fav_wiki"].canConvert<QString>()) {
-            favId = itemMap["fav_wiki"].toString();
+        if (checkValue<QString>(itemMap, "fav_wiki")) {
+            favAlbum = itemMap["fav_wiki"].toString();
         }
         // qDebug() << itemMap["stream_time"].toString() << itemMap["title"].toString();
 
         Music m;
         m.favId = favId;
         m.favAlbum = favAlbum;
-        m.title = itemMap["title"].toString();
+        m.title = normalizeString(itemMap["title"].toString());
         m.albumId = itemMap["wiki_id"].toString();
-        m.artist = itemMap["artist"].toString();
-        m.album = itemMap["wiki_title"].toString();
+        m.artist = normalizeString(itemMap["artist"].toString());
+        m.album = normalizeString(itemMap["wiki_title"].toString());
         m.albumUrl = itemMap["wiki_url"].toString();
         m.songUrl = itemMap["sub_url"].toString();
         m.streamTime = itemMap["stream_time"].toString();
