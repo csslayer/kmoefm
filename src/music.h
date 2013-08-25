@@ -11,6 +11,9 @@ struct Music {
     QString albumUrl;
     QString songUrl;
     QString id;
+    QString streamTime;
+    qlonglong streamLength;
+    QString favId;
 };
 
 #endif

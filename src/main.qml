@@ -1,6 +1,24 @@
 import QtQuick 1.1
 
 Item {
+
+    function formatTime(sec) {
+        h = Math.floor(sec / 60 / 60);
+        m = Math.floor(sec / 60) % 60;
+        s = sec % 60;
+        str = '';
+        if (h > 0) {
+            str = h.toString() + ':';
+        }
+        if (m < 10) {
+            str += '0' + m.toString();
+        } else {
+            str += m.toString();
+        }
+        str += ':' + ((s < 10) ? '0' : '') + s.toString();
+        return str;
+    }
+
     Item {
         z: 1
         anchors.fill: parent
@@ -41,16 +59,60 @@ Item {
         }
     }
 
-    Image {
+    Item {
         anchors {
             left: parent.left
         }
         id: cover
-        source: controller.info.cover
-        asynchronous: true
         height: 192
         width: 192
-        smooth: true
+
+        Connections {
+            id: coverChange
+            property bool m : true;
+            target: controller
+            onInfoChanged: {
+                coverChange.m = !coverChange.m;
+                if (coverChange.m) {
+                    coverImage2.source = controller.info.cover
+                } else {
+                    coverImage1.source = controller.info.cover
+                }
+            }
+        }
+
+        states: [
+            State {
+                name: "cover1"; when: coverChange.m
+                PropertyChanges { target: coverImage1; opacity: 0.0 }
+                PropertyChanges { target: coverImage2; opacity: 1.0 }
+            },
+            State {
+                name: "cover2"; when: !coverChange.m
+                PropertyChanges { target: coverImage1; opacity: 1.0 }
+                PropertyChanges { target: coverImage2; opacity: 0.0 }
+            }]
+
+        Image {
+            id: coverImage1
+            anchors.fill: parent
+            smooth: true
+            asynchronous: true
+            Behavior on opacity {
+                NumberAnimation { duration: 1000 }
+            }
+        }
+
+        Image {
+            id: coverImage2
+            anchors.fill: parent
+            asynchronous: true
+            smooth: true
+            Behavior on opacity {
+                NumberAnimation { duration: 1000 }
+            }
+        }
+
         MouseArea {
             anchors.fill: parent
             onClicked: controller.playPause()
@@ -103,7 +165,7 @@ Item {
                 margins: 5
             }
             id : title
-            elide: Text.ElideMiddle
+            elide: Text.ElideRight
             textFormat: Text.PlainText
             text: controller.info.title
             color: controller.info.songUrl.length > 0 ? controller.linkColor : controller.textColor
@@ -126,7 +188,7 @@ Item {
                 margins: 5
             }
             id : artist
-            elide: Text.ElideMiddle
+            elide: Text.ElideRight
             text: controller.info.artist
         }
 
@@ -139,7 +201,7 @@ Item {
             }
             id : album
             color: controller.info.albumUrl.length > 0 ? controller.linkColor : controller.textColor
-            elide: Text.ElideMiddle
+            elide: Text.ElideRight
             text: controller.info.album
             textFormat: Text.PlainText
             font.underline: controller.info.albumUrl.length > 0
@@ -153,11 +215,43 @@ Item {
             }
         }
 
+        Text {
+            id : time
+            anchors {
+                top: album.bottom
+                left: parent.left
+                right: parent.right
+                margins: 5
+            }
+            text : formatTime(controller.time) + ' / ' + controller.info.streamTime
+            visible: controller.isPlaying
+        }
+
+        Rectangle {
+            anchors {
+                top: time.bottom
+                left: parent.left
+                right: parent.right
+            }
+            height: 2
+            color: "grey"
+            Rectangle {
+                color: "lightgrey"
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                }
+                height: 2
+                width: parent.width * ((controller.info.streamLength > controller.time) ? controller.time / controller.info.streamLength : 1)
+                visible: controller.isPlaying
+            }
+        }
+
         Item {
             anchors {
                 left: parent.left
                 right: parent.right
-                top: album.bottom
+                top: time.bottom
                 bottom: parent.bottom
             }
             Item {
@@ -166,7 +260,7 @@ Item {
                 height: like.height
                 Image {
                     id: like
-                    source: "image://theme/favorites"
+                    source: "image://theme/favorites" + ((controller.info.favId.length > 0) ? "" :  "/disabled")
                     sourceSize.width: width
                     sourceSize.height: height
                     anchors {

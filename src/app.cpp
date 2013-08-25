@@ -69,8 +69,12 @@ NetworkAccessManager* App::networkAccessManager() const
 void App::updateInfo()
 {
     QString title = (*moeApp->controller()->info())["title"].toString();
+    if (m_title == title) {
+        return;
+    }
+    m_title = title;
     m_tray->setToolTipSubTitle(title);
-    m_tray->showMessage(i18n("Moe FM"), title, "kmoefm", 4000);
+    m_tray->showMessage(i18n("Moe FM"), title, "kmoefm", 1000);
     if (title.isEmpty()) {
         title = i18n("Moe FM");
     } else {

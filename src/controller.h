@@ -24,6 +24,8 @@ class Controller : public QObject
     Q_PROPERTY(QColor linkColor READ linkColor NOTIFY colorChanged)
     Q_PROPERTY(QColor textColor READ textColor NOTIFY colorChanged)
     Q_PROPERTY(bool isPaused READ isPaused NOTIFY stateChanged)
+    Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY stateChanged)
+    Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
 public:
     explicit Controller(QObject* parent = 0);
     virtual ~Controller();
@@ -36,19 +38,21 @@ public slots:
     void playerFinished();
     virtual bool eventFilter(QObject* , QEvent* );
     void favFinshed(bool success);
-    void playerStateChanged(Phonon::State,Phonon::State);
 
 public:
     QDeclarativePropertyMap* info() const;
     QColor linkColor() const;
     QColor textColor() const;
     bool isPaused() const;
+    bool isPlaying() const;
+    qint64 time() const;
 
 signals:
     void infoChanged();
     void colorChanged();
     void stateChanged();
     void favoriteAdded();
+    void timeChanged(qint64);
 
 private:
     void setCurrentMusic(const Music& m);

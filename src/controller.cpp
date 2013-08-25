@@ -7,6 +7,7 @@
 #include <QPalette>
 #include <qjson/parser.h>
 #include <KDebug>
+#include <iostream>
 
 Controller::Controller(QObject* parent): QObject(parent)
     ,m_parser(new QJson::Parser)
@@ -17,8 +18,10 @@ Controller::Controller(QObject* parent): QObject(parent)
 {
     setCurrentMusic(Music());
     installEventFilter(moeApp);
-    connect(m_mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this, SLOT(playerStateChanged(Phonon::State,Phonon::State)));
+    m_mediaObject->setTickInterval(900);
+    connect(m_mediaObject, SIGNAL(tick(qint64)), this, SIGNAL(timeChanged(qint64)));
     connect(m_mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this, SIGNAL(stateChanged()));
+    connect(m_mediaObject, SIGNAL(finished()), this, SLOT(playerFinished()));
 }
 
 Controller::~Controller()
@@ -100,6 +103,12 @@ void Controller::loadMusicFinished(bool success)
         if (!itemMap.contains("sub_url") || !itemMap["sub_url"].canConvert<QString>()) {
             continue;
         }
+        if (!itemMap.contains("stream_time") || !itemMap["stream_time"].canConvert<QString>()) {
+            continue;
+        }
+        if (!itemMap.contains("stream_length") || !itemMap["stream_length"].canConvert<QString>()) {
+            continue;
+        }
 
         QString cover;
         if (itemMap.contains("cover") && itemMap["cover"].canConvert<QVariantMap>()) {
@@ -108,14 +117,22 @@ void Controller::loadMusicFinished(bool success)
                 cover = coverMap["square"].toString();
             }
         }
+
+        QString favId;
+        if (itemMap.contains("fav_sub") && itemMap["fav_sub"].canConvert<QString>()) {
+            favId = itemMap["fav_sub"].toString();
+        }
         // qDebug() << itemMap["stream_time"].toString() << itemMap["title"].toString();
 
         Music m;
+        m.favId = favId;
         m.title = itemMap["title"].toString();
         m.artist = itemMap["artist"].toString();
         m.album = itemMap["wiki_title"].toString();
         m.albumUrl = itemMap["wiki_url"].toString();
         m.songUrl = itemMap["sub_url"].toString();
+        m.streamTime = itemMap["stream_time"].toString();
+        m.streamLength = itemMap["stream_length"].toString().toLongLong();
         m.cover = cover;
         m.id = itemMap["sub_id"].toString();
         m.url = QUrl(itemMap["url"].toString());
@@ -149,19 +166,34 @@ void Controller::playPause()
 
 void Controller::like()
 {
-    QOAuth::ParamMap params;
-    params.insert("fav_obj_type", "song");
-    params.insert("fav_obj_id", (*m_current)["id"].toString().toLatin1());
-    params.insert("fav_type", "1");
-    params.insert("save_status", "1");
-    RequestDataJob* job = new RequestDataJob(
-        QUrl("http://api.moefou.org/fav/add.json"),
-        QOAuth::GET,
-        params
-    );
+    RequestDataJob* job;
+    if ((*m_current)["favId"].toString().length() > 0) {
+        QOAuth::ParamMap params;
+        params.insert("fav_obj_type", "song");
+        params.insert("fav_obj_id", (*m_current)["id"].toString().toLatin1());
+        job = new RequestDataJob(
+            QUrl("http://api.moefou.org/fav/delete.json"),
+            QOAuth::GET,
+            params
+        );
+        m_current->insert("favId", "");
+        connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
+        emit infoChanged();
+    } else {
+        QOAuth::ParamMap params;
+        params.insert("fav_obj_type", "song");
+        params.insert("fav_obj_id", (*m_current)["id"].toString().toLatin1());
+        params.insert("fav_type", "1");
+        params.insert("save_status", "1");
+        job = new RequestDataJob(
+            QUrl("http://api.moefou.org/fav/add.json"),
+            QOAuth::GET,
+            params
+        );
+        connect(job, SIGNAL(finished(bool)), this, SLOT(favFinshed(bool)));
+    }
     // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
     connect(job, SIGNAL(finished(bool)), job, SLOT(deleteLater()));
-    connect(job, SIGNAL(finished(bool)), this, SLOT(favFinshed(bool)));
     job->start();
 }
 
@@ -175,7 +207,6 @@ void Controller::setCurrentMusic(const Music& m)
     m_mediaObject->clear();
     m_mediaObject->enqueue(m.url);
     m_mediaObject->play();
-    connect(m_mediaObject, SIGNAL(finished()), this, SLOT(playerFinished()));
 
     m_current->insert("id", m.id);
     m_current->insert("title", m.title);
@@ -184,6 +215,9 @@ void Controller::setCurrentMusic(const Music& m)
     m_current->insert("album", m.album);
     m_current->insert("albumUrl", m.albumUrl);
     m_current->insert("cover", m.cover);
+    m_current->insert("streamTime", m.streamTime);
+    m_current->insert("streamLength", m.streamLength);
+    m_current->insert("favId", m.favId);
 
     emit infoChanged();
 }
@@ -227,12 +261,42 @@ bool Controller::isPaused() const
 
 void Controller::favFinshed(bool success)
 {
-    if (success) {
-        emit favoriteAdded();
+    RequestDataJob* job = static_cast<RequestDataJob*>(sender());
+    if (!success) {
+        return;
     }
+    QVariant result = m_parser->parse(job->data());
+    if (!result.canConvert<QVariantMap>()) {
+        return;
+    }
+
+    QMap< QString, QVariant > itemMap = result.toMap();
+    if (!itemMap.contains("response") || !itemMap["response"].canConvert<QVariantMap>()) {
+        return;
+    }
+    itemMap = itemMap["response"].toMap();
+
+    if (!itemMap.contains("fav") || !itemMap["fav"].canConvert<QVariantMap>()) {
+        return;
+    }
+    itemMap = itemMap["fav"].toMap();
+
+    if (!itemMap.contains("fav_id") || !itemMap["fav_id"].canConvert<qulonglong>()) {
+        return;
+    }
+
+    m_current->insert("favId", itemMap["fav_id"].toString());
+    emit infoChanged();
+    emit favoriteAdded();
 }
 
-void Controller::playerStateChanged(Phonon::State newState, Phonon::State oldState)
+bool Controller::isPlaying() const
 {
-    // kDebug() << newState << oldState;
+    return m_mediaObject->state() == Phonon::PlayingState;
+}
+
+
+qint64 Controller::time() const
+{
+    return m_mediaObject->currentTime() / 1000;
 }

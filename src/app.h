@@ -51,6 +51,7 @@ private:
     MainWindow* m_mainWindow;
     Controller* m_controller;
     KStatusNotifierItem* m_tray;
+    QString m_title;
 };
 
 #if defined(moeApp)
