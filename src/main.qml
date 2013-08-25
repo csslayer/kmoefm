@@ -99,7 +99,10 @@ Item {
             smooth: true
             asynchronous: true
             Behavior on opacity {
-                NumberAnimation { duration: 1000 }
+                SequentialAnimation {
+                    PauseAnimation { duration: 500 }
+                    NumberAnimation { duration: 1000 }
+                }
             }
         }
 
@@ -236,14 +239,28 @@ Item {
             height: 2
             color: "grey"
             Rectangle {
+                function calProgress() {
+                    if (controller.info.streamLength > controller.time) {
+                        return controller.time/controller.info.streamLength;
+                    } else {
+                        return 1;
+                    }
+                }
+
                 color: "lightgrey"
                 anchors {
                     top: parent.top
                     left: parent.left
                 }
                 height: 2
-                width: parent.width * ((controller.info.streamLength > controller.time) ? controller.time / controller.info.streamLength : 1)
+                width: parent.width * calProgress()
                 visible: controller.isPlaying
+
+                Behavior on width {
+                    SequentialAnimation {
+                        NumberAnimation { duration: 500 }
+                    }
+                }
             }
         }
 
