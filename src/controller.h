@@ -36,6 +36,7 @@ public slots:
     void playerFinished();
     virtual bool eventFilter(QObject* , QEvent* );
     void favFinshed(bool success);
+    void playerStateChanged(Phonon::State,Phonon::State);
 
 public:
     QDeclarativePropertyMap* info() const;

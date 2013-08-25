@@ -6,6 +6,7 @@
 #include <QDeclarativePropertyMap>
 #include <QPalette>
 #include <qjson/parser.h>
+#include <KDebug>
 
 Controller::Controller(QObject* parent): QObject(parent)
     ,m_parser(new QJson::Parser)
@@ -16,6 +17,7 @@ Controller::Controller(QObject* parent): QObject(parent)
 {
     setCurrentMusic(Music());
     installEventFilter(moeApp);
+    connect(m_mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this, SLOT(playerStateChanged(Phonon::State,Phonon::State)));
     connect(m_mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this, SIGNAL(stateChanged()));
 }
 
@@ -170,8 +172,8 @@ QDeclarativePropertyMap* Controller::info() const
 
 void Controller::setCurrentMusic(const Music& m)
 {
-    disconnect(m_mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)));
-    m_mediaObject->setCurrentSource(m.url);
+    m_mediaObject->clearQueue();
+    m_mediaObject->enqueue(m.url);
     m_mediaObject->play();
     connect(m_mediaObject, SIGNAL(finished()), this, SLOT(playerFinished()));
 
@@ -188,24 +190,23 @@ void Controller::setCurrentMusic(const Music& m)
 
 void Controller::playerFinished()
 {
-    if (m_mediaObject->state() == Phonon::ErrorState) {
-        return;
+    if (m_mediaObject->state() != Phonon::ErrorState) {
+        QOAuth::ParamMap params;
+        params.insert("log_obj_type", "sub");
+        params.insert("log_type", "listen");
+        params.insert("obj_type", "song");
+        params.insert("api", "json");
+        params.insert("obj_id", (*m_current)["id"].toString().toLatin1());
+        RequestDataJob* job = new RequestDataJob(
+            QUrl("http://moe.fm/ajax/log"),
+            QOAuth::GET,
+            params
+        );
+        // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
+        connect(job, SIGNAL(finished(bool)), job, SLOT(deleteLater()));
+        job->start();
     }
 
-    QOAuth::ParamMap params;
-    params.insert("log_obj_type", "sub");
-    params.insert("log_type", "listen");
-    params.insert("obj_type", "song");
-    params.insert("api", "json");
-    params.insert("obj_id", (*m_current)["id"].toString().toLatin1());
-    RequestDataJob* job = new RequestDataJob(
-        QUrl("http://moe.fm/ajax/log"),
-        QOAuth::GET,
-        params
-    );
-    // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
-    connect(job, SIGNAL(finished(bool)), job, SLOT(deleteLater()));
-    job->start();
     playNext();
 }
 
@@ -229,4 +230,9 @@ void Controller::favFinshed(bool success)
     if (success) {
         emit favoriteAdded();
     }
+}
+
+void Controller::playerStateChanged(Phonon::State newState, Phonon::State oldState)
+{
+    kDebug() << newState << oldState;
 }
