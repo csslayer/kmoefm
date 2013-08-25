@@ -159,59 +159,64 @@ Item {
                 top: album.bottom
                 bottom: parent.bottom
             }
-            Image {
-                id: like
-                source: "image://theme/favorites"
-                sourceSize.width: width
-                sourceSize.height: height
-                anchors {
-                    verticalCenter: parent.verticalCenter
+            Item {
+                anchors.centerIn: parent
+                width: like.width + playpause.width + next.width
+                height: like.height
+                Image {
+                    id: like
+                    source: "image://theme/favorites"
+                    sourceSize.width: width
+                    sourceSize.height: height
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                    }
+
+                    width: 32
+                    height: 32
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: controller.like()
+                    }
                 }
 
-                width: 32
-                height: 32
+                Image {
+                    id: next
+                    source: "image://theme/media-skip-forward"
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: playpause.right
+                    }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: controller.like()
-                }
-            }
+                    sourceSize.width: width
+                    sourceSize.height: height
+                    width: 32
+                    height: 32
 
-            Image {
-                id: next
-                source: "image://theme/media-skip-forward"
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: playpause.right
-                }
-
-                sourceSize.width: width
-                sourceSize.height: height
-                width: 32
-                height: 32
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: controller.playNext()
-                }
-            }
-
-            Image {
-                id: playpause
-                source: controller.isPaused ? "image://theme/media-playback-start" :  "image://theme/media-playback-pause"
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: like.right
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: controller.playNext()
+                    }
                 }
 
-                sourceSize.width: width
-                sourceSize.height: height
-                width: 32
-                height: 32
+                Image {
+                    id: playpause
+                    source: controller.isPaused ? "image://theme/media-playback-start" :  "image://theme/media-playback-pause"
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: like.right
+                    }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: controller.playPause()
+                    sourceSize.width: width
+                    sourceSize.height: height
+                    width: 32
+                    height: 32
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: controller.playPause()
+                    }
                 }
             }
         }
