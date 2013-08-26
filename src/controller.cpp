@@ -101,7 +101,7 @@ void Controller::loadMusicFinished(bool success)
 
         QVariantMap itemMap = item.toMap();
         QStringList valueToCheck;
-        valueToCheck << "title" << "sub_id" << "url" << "artist"
+        valueToCheck << "sub_title" << "sub_id" << "url" << "artist"
                      << "wiki_title" << "wiki_id" << "wiki_url"
                      << "sub_url" << "stream_time" << "stream_length";
         bool flag = false;
@@ -137,7 +137,7 @@ void Controller::loadMusicFinished(bool success)
         Music m;
         m.favId = favId;
         m.favAlbum = favAlbum;
-        m.title = normalizeString(itemMap["title"].toString());
+        m.title = normalizeString(itemMap["sub_title"].toString());
         m.albumId = itemMap["wiki_id"].toString();
         m.artist = normalizeString(itemMap["artist"].toString());
         m.album = normalizeString(itemMap["wiki_title"].toString());
