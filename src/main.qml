@@ -1,6 +1,8 @@
 import QtQuick 1.1
 
 Item {
+    id: root
+    property int iconSize: 48
     function formatTime(sec) {
         h = Math.floor(sec / 60 / 60);
         m = Math.floor(sec / 60) % 60;
@@ -274,87 +276,58 @@ Item {
             }
             Item {
                 anchors.centerIn: parent
-                width: (32 + 16) * 4
-                height: (32 + 16)
-                Image {
+                width: (root.iconSize * 1.5) * 4
+                height: (root.iconSize * 1.5)
+
+                IconButton {
                     id: like
                     source: "image://theme/favorites" + ((controller.info.favId.length > 0) ? "" :  "/disabled")
-                    sourceSize.width: width
-                    sourceSize.height: height
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
-                        margins: 16
+                        margins: root.iconSize * 0.5
                     }
 
-                    width: 32
-                    height: 32
+                    iconSize: root.iconSize
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: controller.like(false)
-                    }
+                    onClicked: controller.like(false)
                 }
 
-
-                Image {
+                IconButton {
                     id: likeAlbum
                     source: "image://theme/media-optical-mixed-cd" + ((controller.info.favAlbum.length > 0) ? "" :  "/disabled")
-                    sourceSize.width: width
-                    sourceSize.height: height
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: like.right
-                        margins: 16
+                        margins: root.iconSize * 0.5
                     }
-
-                    width: 32
-                    height: 32
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: controller.like(true)
-                    }
+                    iconSize: root.iconSize
+                    onClicked: controller.like(true)
                 }
 
-                Image {
+                IconButton {
                     id: next
                     source: "image://theme/media-skip-forward"
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: playpause.right
-                        margins: 16
+                        margins: root.iconSize * 0.5
                     }
-
-                    sourceSize.width: width
-                    sourceSize.height: height
-                    width: 32
-                    height: 32
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: controller.playNext()
-                    }
+                    iconSize: root.iconSize
+                    onClicked: controller.playNext()
                 }
 
-                Image {
+                IconButton {
                     id: playpause
                     source: controller.isPaused ? "image://theme/media-playback-start" :  "image://theme/media-playback-pause"
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: likeAlbum.right
-                        margins: 16
+                        margins: root.iconSize * 0.5
                     }
 
-                    sourceSize.width: width
-                    sourceSize.height: height
-                    width: 32
-                    height: 32
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: controller.playPause()
-                    }
+                    iconSize: root.iconSize
+                    onClicked: controller.playPause()
                 }
             }
         }
