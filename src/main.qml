@@ -3,23 +3,6 @@ import QtQuick 1.1
 Item {
     id: root
     property int iconSize: 48
-    function formatTime(sec) {
-        h = Math.floor(sec / 60 / 60);
-        m = Math.floor(sec / 60) % 60;
-        s = sec % 60;
-        str = '';
-        if (h > 0) {
-            str = h.toString() + ':';
-        }
-        if (m < 10) {
-            str += '0' + m.toString();
-        } else {
-            str += m.toString();
-        }
-        str += ':' + ((s < 10) ? '0' : '') + s.toString();
-        return str;
-    }
-
     Item {
         z: 1
         anchors.fill: parent
@@ -222,63 +205,31 @@ Item {
             text: controller.info.artist
         }
 
-        Text {
-            id : time
+        ProgressBar {
+            id: progressBar
             anchors {
-                top: artist.bottom
                 left: parent.left
                 right: parent.right
-                margins: 5
+                top: artist.bottom
             }
-            text : formatTime(controller.time) + ' / ' + controller.info.streamTime
-            visible: controller.isPlaying
+            time: controller.time
+            totalTime: controller.info.streamLength
+            windowColor: controller.windowColor
         }
+
 
         Rectangle {
-            anchors {
-                top: time.bottom
-                left: parent.left
-                right: parent.right
-            }
-            height: 2
-            color: Qt.darker(controller.windowColor, 1.5)
-            Rectangle {
-                function calProgress() {
-                    if (controller.info.streamLength > controller.time) {
-                        return controller.time/controller.info.streamLength;
-                    } else {
-                        return 1;
-                    }
-                }
-
-                color: Qt.lighter(controller.windowColor, 1.5)
-                anchors {
-                    top: parent.top
-                    left: parent.left
-                }
-                height: 2
-                width: parent.width * calProgress()
-                visible: controller.isPlaying
-
-                Behavior on width {
-                    SequentialAnimation {
-                        NumberAnimation { duration: 900 }
-                    }
-                }
-            }
-        }
-
-        Item {
+            color: "red"
             anchors {
                 left: parent.left
                 right: parent.right
-                top: time.bottom
+                top: progressBar.bottom
                 bottom: parent.bottom
             }
             Item {
                 anchors.centerIn: parent
                 width: (root.iconSize * 1.5) * 4
-                height: (root.iconSize * 1.5)
+                height: (root.iconSize * 1)
 
                 IconButton {
                     id: like
@@ -286,7 +237,8 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
-                        margins: root.iconSize * 0.5
+                        leftMargin: root.iconSize * 0.5
+                        rightMargin: root.iconSize * 0.5
                     }
 
                     iconSize: root.iconSize
@@ -300,7 +252,8 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: like.right
-                        margins: root.iconSize * 0.5
+                        leftMargin: root.iconSize * 0.5
+                        rightMargin: root.iconSize * 0.5
                     }
                     iconSize: root.iconSize
                     onClicked: controller.like(true)
@@ -312,7 +265,8 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: playpause.right
-                        margins: root.iconSize * 0.5
+                        leftMargin: root.iconSize * 0.5
+                        rightMargin: root.iconSize * 0.5
                     }
                     iconSize: root.iconSize
                     onClicked: controller.playNext()
@@ -324,7 +278,8 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: likeAlbum.right
-                        margins: root.iconSize * 0.5
+                        leftMargin: root.iconSize * 0.5
+                        rightMargin: root.iconSize * 0.5
                     }
 
                     iconSize: root.iconSize

@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>IconButton.qml</file>
+        <file>ProgressBar.qml</file>
     </qresource>
 </RCC>
 
