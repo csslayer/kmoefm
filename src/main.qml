@@ -218,8 +218,7 @@ Item {
         }
 
 
-        Rectangle {
-            color: "red"
+        Item {
             anchors {
                 left: parent.left
                 right: parent.right
