@@ -8,6 +8,7 @@
 #include <QPalette>
 #include <qjson/parser.h>
 #include <KDebug>
+#include <QFontMetrics>
 #include <iostream>
 
 Controller::Controller(QObject* parent): QObject(parent)
@@ -37,6 +38,8 @@ bool Controller::eventFilter(QObject *watched, QEvent *event)
     if (watched == qApp) {
         if (event->type() == QEvent::ApplicationPaletteChange) {
             emit colorChanged();
+        } else if (event->type() == QEvent::ApplicationFontChange) {
+            emit fontChanged();
         }
     }
     return QObject::eventFilter(watched, event);
@@ -269,6 +272,11 @@ QColor Controller::linkColor() const
     return qApp->palette().color(QPalette::Active, QPalette::Link);
 }
 
+QColor Controller::windowColor() const
+{
+    return qApp->palette().color(QPalette::Active, QPalette::Window);
+}
+
 bool Controller::isPaused() const
 {
     return m_mediaObject->state() == Phonon::PausedState;
@@ -311,8 +319,12 @@ bool Controller::isPlaying() const
     return m_mediaObject->state() == Phonon::PlayingState;
 }
 
-
 qint64 Controller::time() const
 {
     return m_mediaObject->currentTime() / 1000;
+}
+
+int Controller::fontSize() const
+{
+    return moeApp->font().pointSize();
 }

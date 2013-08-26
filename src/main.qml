@@ -168,6 +168,7 @@ Item {
                 margins: 5
             }
             id : title
+            font.pointSize: controller.fontSize * 1.5
             elide: Text.ElideRight
             textFormat: Text.PlainText
             text: controller.info.title
@@ -190,18 +191,6 @@ Item {
                 right: parent.right
                 margins: 5
             }
-            id : artist
-            elide: Text.ElideRight
-            text: controller.info.artist
-        }
-
-        Text {
-            anchors {
-                top: artist.bottom
-                left: parent.left
-                right: parent.right
-                margins: 5
-            }
             id : album
             color: controller.info.albumUrl.length > 0 ? controller.linkColor : controller.textColor
             elide: Text.ElideRight
@@ -219,9 +208,21 @@ Item {
         }
 
         Text {
-            id : time
             anchors {
                 top: album.bottom
+                left: parent.left
+                right: parent.right
+                margins: 5
+            }
+            id : artist
+            elide: Text.ElideRight
+            text: controller.info.artist
+        }
+
+        Text {
+            id : time
+            anchors {
+                top: artist.bottom
                 left: parent.left
                 right: parent.right
                 margins: 5
@@ -237,7 +238,7 @@ Item {
                 right: parent.right
             }
             height: 2
-            color: "grey"
+            color: Qt.darker(controller.windowColor, 1.5)
             Rectangle {
                 function calProgress() {
                     if (controller.info.streamLength > controller.time) {
@@ -247,7 +248,7 @@ Item {
                     }
                 }
 
-                color: "lightgrey"
+                color: Qt.lighter(controller.windowColor, 1.5)
                 anchors {
                     top: parent.top
                     left: parent.left
@@ -258,7 +259,7 @@ Item {
 
                 Behavior on width {
                     SequentialAnimation {
-                        NumberAnimation { duration: 500 }
+                        NumberAnimation { duration: 900 }
                     }
                 }
             }
@@ -273,8 +274,8 @@ Item {
             }
             Item {
                 anchors.centerIn: parent
-                width: like.width + likeAlbum.width + playpause.width + next.width
-                height: like.height
+                width: (32 + 16) * 4
+                height: (32 + 16)
                 Image {
                     id: like
                     source: "image://theme/favorites" + ((controller.info.favId.length > 0) ? "" :  "/disabled")
@@ -283,6 +284,7 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
+                        margins: 16
                     }
 
                     width: 32
@@ -303,6 +305,7 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: like.right
+                        margins: 16
                     }
 
                     width: 32
@@ -320,6 +323,7 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: playpause.right
+                        margins: 16
                     }
 
                     sourceSize.width: width
@@ -339,6 +343,7 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: likeAlbum.right
+                        margins: 16
                     }
 
                     sourceSize.width: width

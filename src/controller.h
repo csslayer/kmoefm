@@ -23,9 +23,11 @@ class Controller : public QObject
     Q_PROPERTY(QDeclarativePropertyMap *info READ info NOTIFY infoChanged)
     Q_PROPERTY(QColor linkColor READ linkColor NOTIFY colorChanged)
     Q_PROPERTY(QColor textColor READ textColor NOTIFY colorChanged)
+    Q_PROPERTY(QColor windowColor READ windowColor NOTIFY colorChanged)
     Q_PROPERTY(bool isPaused READ isPaused NOTIFY stateChanged)
     Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY stateChanged)
     Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
+    Q_PROPERTY(int fontSize READ fontSize NOTIFY fontChanged)
 public:
     explicit Controller(QObject* parent = 0);
     virtual ~Controller();
@@ -43,15 +45,18 @@ public:
     QDeclarativePropertyMap* info() const;
     QColor linkColor() const;
     QColor textColor() const;
+    QColor windowColor() const;
     bool isPaused() const;
     bool isPlaying() const;
     qint64 time() const;
+    int fontSize() const;
 
 signals:
     void infoChanged();
     void colorChanged();
     void stateChanged();
     void favoriteAdded();
+    void fontChanged();
     void timeChanged(qint64);
 
 private:
