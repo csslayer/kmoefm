@@ -156,6 +156,7 @@ Item {
 
     Item {
         anchors {
+            margins: 15
             top: cover.top
             left: cover.right
             right: parent.right

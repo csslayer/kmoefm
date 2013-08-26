@@ -8,3 +8,5 @@ Type=Application
 Terminal=false
 Icon=kmoefm
 Categories=Qt;KDE;AudioVideo;Player;
+X-KDE-Keywords=moefm;KMoeFM;MoeFM;radio;moefou
+X-KDE-Keywords[zh_CN]=moefm;KMoeFM;MoeFM;radio;moefou;萌否;收音机;电台;
