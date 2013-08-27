@@ -34,12 +34,13 @@ public:
 public slots:
     void playNext();
     void playPause();
-    void like(bool isAlbum);
+    void like(bool isAlbum, int type);
     void loadMusicFinished(bool);
     void loadMusic();
     void playerFinished();
     virtual bool eventFilter(QObject* , QEvent* );
-    void favFinshed(bool success);
+    void favFinished(bool success);
+    void favDelFinshed(bool);
 
 public:
     QDeclarativePropertyMap* info() const;
@@ -55,7 +56,7 @@ signals:
     void infoChanged();
     void colorChanged();
     void stateChanged();
-    void favoriteAdded();
+    void favoriteChanged(qulonglong type);
     void fontChanged();
     void timeChanged(qint64);
 

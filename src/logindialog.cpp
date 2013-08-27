@@ -3,6 +3,8 @@
 #include "requesttokenjob.h"
 #include "networkaccessmanager.h"
 #include "app.h"
+#include <KMessageBox>
+#include <KLocalizedString>
 #include <QtOAuth/QtOAuth>
 #include <QWebView>
 #include <QVBoxLayout>
@@ -14,6 +16,7 @@ LoginDialog::LoginDialog(QWidget* parent): QDialog(parent)
     QThread* thread = new QThread;
 
     auth->moveToThread(thread);
+    setWindowTitle(i18n("Login"));
 
     connect(thread, SIGNAL(started()), auth, SLOT(start()));
     connect(auth, SIGNAL(finished(bool,QByteArray,QByteArray)), thread, SLOT(quit()));
@@ -40,7 +43,6 @@ LoginDialog::LoginDialog(QWidget* parent): QDialog(parent)
 
 void LoginDialog::requestTokenFinished(bool finished, const QByteArray& requestToken , const QByteArray& tokenSecret )
 {
-    qDebug() << finished << requestToken << tokenSecret;
     if (finished) {
         QUrl url("http://api.moefou.org/oauth/authorize");
         url.addQueryItem ("oauth_token", requestToken);
@@ -52,6 +54,7 @@ void LoginDialog::requestTokenFinished(bool finished, const QByteArray& requestT
         oauthTokenSecret = tokenSecret;
         connect(webView, SIGNAL(urlChanged(QUrl)), SLOT(urlChanged(QUrl)));
     } else {
+        KMessageBox::error(this, i18n("Fetching request token failed, please check your network."));
         reject();
     }
 }
@@ -90,6 +93,7 @@ void LoginDialog::accessTokenFinished(bool finished, const QByteArray& token, co
         m_secret = secret;
         accept();
     } else {
+        KMessageBox::error(this, i18n("Fetching access token failed, please check your network."));
         reject();
     }
 }

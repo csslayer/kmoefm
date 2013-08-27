@@ -25,14 +25,19 @@ Item {
         Text {
             id: favText
             anchors.centerIn: parent
-            text: i18n("Favorite Added")
             color: "black"
         }
 
 
         Connections {
             target: controller
-            onFavoriteAdded : favAnimation.start()
+            onFavoriteChanged : function(type) {
+                if (type != 1 || type != 2 || type != 0) {
+                    return;
+                }
+                var text = [i18n("Favorite Removed"), i18n("Favorite Added"), i18n("Song Deleted")]
+                favText.text = text[type]
+            }
         }
 
         SequentialAnimation {
@@ -227,35 +232,64 @@ Item {
             }
             Item {
                 anchors.centerIn: parent
-                width: (root.iconSize * 1.5) * 4
-                height: (root.iconSize * 1)
+                width: childrenRect.width
+                height: root.iconSize
 
                 IconButton {
                     id: like
-                    source: "image://theme/favorites" + ((controller.info.favId.length > 0) ? "" :  "/disabled")
+                    source: "image://theme/emblem-favorite" + ((controller.info.favType == 1) ? "" :  "/disabled")
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
-                        leftMargin: root.iconSize * 0.5
-                        rightMargin: root.iconSize * 0.5
+                        leftMargin: root.iconSize * 0.25
+                        rightMargin: root.iconSize * 0.25
                     }
 
                     iconSize: root.iconSize
 
-                    onClicked: controller.like(false)
+                    onClicked: controller.like(false, 1)
                 }
 
                 IconButton {
                     id: likeAlbum
-                    source: "image://theme/media-optical-mixed-cd" + ((controller.info.favAlbum.length > 0) ? "" :  "/disabled")
+                    source: "image://theme/media-optical" + ((controller.info.favAlbumType == 1) ? "" :  "/disabled")
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: like.right
-                        leftMargin: root.iconSize * 0.5
-                        rightMargin: root.iconSize * 0.5
+                        leftMargin: root.iconSize * 0.25
+                        rightMargin: root.iconSize * 0.25
                     }
                     iconSize: root.iconSize
-                    onClicked: controller.like(true)
+                    onClicked: controller.like(true, 1)
+                }
+
+                IconButton {
+                    id: trash
+                    source: "image://theme/user-trash" + ((controller.info.favType == 2) ? "" :  "/disabled")
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: likeAlbum.right
+                        leftMargin: root.iconSize * 0.25
+                        rightMargin: root.iconSize * 0.25
+                    }
+
+                    iconSize: root.iconSize
+
+                    onClicked: controller.like(false, 2)
+                }
+
+                IconButton {
+                    id: playpause
+                    source: controller.isPaused ? "image://theme/media-playback-start" :  "image://theme/media-playback-pause"
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: trash.right
+                        leftMargin: root.iconSize * 0.25
+                        rightMargin: root.iconSize * 0.25
+                    }
+
+                    iconSize: root.iconSize
+                    onClicked: controller.playPause()
                 }
 
                 IconButton {
@@ -264,25 +298,11 @@ Item {
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: playpause.right
-                        leftMargin: root.iconSize * 0.5
-                        rightMargin: root.iconSize * 0.5
+                        leftMargin: root.iconSize * 0.25
+                        rightMargin: root.iconSize * 0.25
                     }
                     iconSize: root.iconSize
                     onClicked: controller.playNext()
-                }
-
-                IconButton {
-                    id: playpause
-                    source: controller.isPaused ? "image://theme/media-playback-start" :  "image://theme/media-playback-pause"
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: likeAlbum.right
-                        leftMargin: root.iconSize * 0.5
-                        rightMargin: root.iconSize * 0.5
-                    }
-
-                    iconSize: root.iconSize
-                    onClicked: controller.playPause()
                 }
             }
         }

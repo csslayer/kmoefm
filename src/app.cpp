@@ -130,6 +130,7 @@ void App::checkCredential()
 
 void App::firstRunCheck(bool success)
 {
+    kDebug() << "login" << success;
     this->disconnect(SIGNAL(checkCredentialFinished(bool)));
     if (success) {
         m_mainWindow->show();
@@ -145,6 +146,7 @@ void App::debugJob(bool success)
     RequestDataJob* job = static_cast<RequestDataJob*>(sender());
     QVariant result = m_parser->parse(job->data());
     kDebug() << success << result;
+    kDebug() << job->data();
 }
 
 void App::writeSettings()
