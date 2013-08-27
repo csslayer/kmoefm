@@ -33,7 +33,7 @@ App::App() : KUniqueApplication()
 
     m_controller = new Controller;
     m_mainWindow = new MainWindow;
-    m_tray = new KStatusNotifierItem(this);
+    m_tray = new KStatusNotifierItem(m_mainWindow);
     m_tray->setIconByName("kmoefm");
     m_tray->setTitle(i18n("Moe FM"));
     m_tray->setToolTipIconByName("kmoefm");
