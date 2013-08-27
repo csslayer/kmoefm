@@ -237,7 +237,8 @@ Item {
 
                 IconButton {
                     id: like
-                    source: "image://theme/emblem-favorite" + ((controller.info.favType == 1) ? "" :  "/disabled")
+                    icon: "emblem-favorite"
+                    mode: (controller.info.favType == 1) ? "" :  "disabled"
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
@@ -252,7 +253,8 @@ Item {
 
                 IconButton {
                     id: likeAlbum
-                    source: "image://theme/media-optical" + ((controller.info.favAlbumType == 1) ? "" :  "/disabled")
+                    icon: "media-optical"
+                    mode: (controller.info.favAlbumType == 1) ? "" :  "disabled"
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: like.right
@@ -265,7 +267,8 @@ Item {
 
                 IconButton {
                     id: trash
-                    source: "image://theme/user-trash" + ((controller.info.favType == 2) ? "" :  "/disabled")
+                    icon: "user-trash"
+                    mode: (controller.info.favType == 2) ? "" :  "disabled"
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: likeAlbum.right
@@ -280,7 +283,7 @@ Item {
 
                 IconButton {
                     id: playpause
-                    source: controller.isPaused ? "image://theme/media-playback-start" :  "image://theme/media-playback-pause"
+                    icon: controller.isPaused ? "media-playback-start" :  "media-playback-pause"
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: trash.right
@@ -294,7 +297,7 @@ Item {
 
                 IconButton {
                     id: next
-                    source: "image://theme/media-skip-forward"
+                    icon: "media-skip-forward"
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: playpause.right

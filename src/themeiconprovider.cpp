@@ -1,5 +1,8 @@
 #include "themeiconprovider.h"
 #include <QIcon>
+#include <KDebug>
+#include <KIcon>
+#include <KIconEffect>
 
 ThemeIconProvider::ThemeIconProvider(): QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
 {
@@ -10,6 +13,7 @@ QPixmap ThemeIconProvider::requestPixmap(const QString& id, QSize* size, const Q
 {
     QString name;
     QIcon::Mode mode = QIcon::Normal;
+    QIcon::State state = QIcon::Off;
     int slash = id.indexOf('/');
     if (slash > 0) {
         name = id.section('/', 0, 0);
@@ -17,10 +21,18 @@ QPixmap ThemeIconProvider::requestPixmap(const QString& id, QSize* size, const Q
         name = id;
     }
 
-    if (id.section('/', 1, -1) == "disabled") {
+    QString modeString = id.section('/', 1, 1);
+    QString stateString = id.section('/', 2, 2);
+    if (modeString == "disabled") {
         mode = QIcon::Disabled;
     }
-    QPixmap pixmap = QIcon::fromTheme(name).pixmap(requestedSize, mode);
+    if (modeString == "active") {
+        mode = QIcon::Active;
+    }
+    if (stateString == "on") {
+        state = QIcon::On;
+    }
+    QPixmap pixmap = KIcon(name).pixmap(requestedSize, mode, state);
     if (size) {
         *size = pixmap.size();
     }
