@@ -50,7 +50,6 @@ void Controller::loadMusic()
 {
     QOAuth::ParamMap params;
     params.insert("api", "json");
-    params.insert("fav", "song");
     RequestDataJob* job = new RequestDataJob(QUrl("http://moe.fm/listen/playlist"), QOAuth::GET, params);
 
     // connect(job, SIGNAL(finished(bool)), moeApp, SLOT(debugJob(bool)));
